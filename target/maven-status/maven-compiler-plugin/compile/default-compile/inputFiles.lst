@@ -1,3 +1,5 @@
+C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\client\CpfValidationClient.java
+C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\controller\CpfController.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\controller\PautaController.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\controller\VotoController.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\CooperativeApplication.java
@@ -5,6 +7,7 @@ C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\dto\AbrirSessaoRe
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\dto\CriarPautaRequest.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\dto\ResultadoResponse.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\dto\ResultadoVotacao.java
+C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\dto\StatusResponse.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\dto\VotoRequest.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\entity\Pauta.java
 C:\dbserver\desafio-votacao\src\main\java\com\coop\cooperative\entity\SessaoVotacao.java
