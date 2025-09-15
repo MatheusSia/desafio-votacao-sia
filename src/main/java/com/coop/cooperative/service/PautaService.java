@@ -2,11 +2,13 @@ package com.coop.cooperative.service;
 
 import com.coop.cooperative.dto.ResultadoVotacao;
 import com.coop.cooperative.entity.Pauta;
+import com.coop.cooperative.entity.ResultadoVotacaoAggregate;
 import com.coop.cooperative.entity.SessaoVotacao;
 import com.coop.cooperative.entity.Voto;
 import com.coop.cooperative.exception.BusinessException;
 import com.coop.cooperative.exception.ResourceNotFoundException;
 import com.coop.cooperative.repository.PautaRepository;
+import com.coop.cooperative.repository.ResultadoRepository;
 import com.coop.cooperative.repository.SessaoRepository;
 import com.coop.cooperative.repository.VotoRepository;
 import org.springframework.stereotype.Service;
@@ -21,13 +23,16 @@ public class PautaService {
     private final PautaRepository pautaRepository;
     private final SessaoRepository sessaoRepository;
     private final VotoRepository votoRepository;
+    private final ResultadoRepository resultadoRepository;
 
     public PautaService(PautaRepository pautaRepository,
                         SessaoRepository sessaoRepository,
-                        VotoRepository votoRepository) {
+                        VotoRepository votoRepository,
+                        ResultadoRepository resultadoRepository) {
         this.pautaRepository = pautaRepository;
         this.sessaoRepository = sessaoRepository;
         this.votoRepository = votoRepository;
+        this.resultadoRepository = resultadoRepository;
     }
 
     public Pauta criarPauta(String titulo, String descricao) {
@@ -62,22 +67,39 @@ public class PautaService {
      * Retorna contagem de votos e status da sessão (ABERTA / ENCERRADA / SEM_SESSAO)
      */
     public ResultadoVotacao obterResultado(Long pautaId) {
-        // valida pauta
         pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada: " + pautaId));
 
-        long sim = votoRepository.countByPautaIdAndOpcao(pautaId, Voto.OpcaoVoto.SIM);
-        long nao = votoRepository.countByPautaIdAndOpcao(pautaId, Voto.OpcaoVoto.NAO);
+        ResultadoVotacaoAggregate agg = resultadoRepository.findById(pautaId).orElse(null);
+        if (agg == null) {
+            // primeira leitura: inicializa agregação a partir da tabela VOTO (fallback)
+            long sim = votoRepository.countByPautaIdAndOpcao(pautaId, Voto.OpcaoVoto.SIM);
+            long nao = votoRepository.countByPautaIdAndOpcao(pautaId, Voto.OpcaoVoto.NAO);
+            agg = new ResultadoVotacaoAggregate(pautaId, sim, nao);
+            try {
+                resultadoRepository.save(agg);
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                // Concorrência: outra thread salvou primeiro
+                agg = resultadoRepository.findById(pautaId)
+                        .orElseThrow(() ->
+                                new BusinessException("Erro ao salvar resultado de votação: " + e.getMessage())
+                        );
+            } catch (Exception e) {
+                // Qualquer outro erro inesperado
+                throw new BusinessException("Erro inesperado ao salvar resultado de votação: " + e.getMessage());
+            }
+
+        }
 
         String status = sessaoRepository.findByPautaId(pautaId)
                 .map(s -> s.isAberta() ? "ABERTA" : "ENCERRADA")
                 .orElse("SEM_SESSAO");
 
         String resultado;
-        if (sim > nao) resultado = "APROVADA";
-        else if (nao > sim) resultado = "REJEITADA";
+        if (agg.getTotalSim() > agg.getTotalNao()) resultado = "APROVADA";
+        else if (agg.getTotalNao() > agg.getTotalSim()) resultado = "REJEITADA";
         else resultado = "EMPATE";
 
-        return new ResultadoVotacao(pautaId, sim, nao, status, resultado);
+        return new ResultadoVotacao(pautaId, agg.getTotalSim(), agg.getTotalNao(), status, resultado);
     }
 }

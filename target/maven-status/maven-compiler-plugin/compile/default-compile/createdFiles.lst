@@ -11,6 +11,7 @@ com\coop\cooperative\entity\Voto$OpcaoVoto.class
 com\coop\cooperative\client\CpfValidationClient.class
 com\coop\cooperative\dto\ResultadoResponse.class
 com\coop\cooperative\dto\ResultadoVotacao.class
+com\coop\cooperative\entity\ResultadoVotacaoAggregate.class
 com\coop\cooperative\exception\GlobalExceptionHandler.class
 com\coop\cooperative\controller\CpfController.class
 com\coop\cooperative\dto\StatusResponse.class
@@ -18,6 +19,7 @@ com\coop\cooperative\controller\VotoController.class
 com\coop\cooperative\entity\Pauta.class
 com\coop\cooperative\exception\BusinessException.class
 com\coop\cooperative\service\PautaService.class
+com\coop\cooperative\repository\ResultadoRepository.class
 com\coop\cooperative\service\SessaoService.class
 com\coop\cooperative\controller\PautaController.class
 com\coop\cooperative\service\VotoService.class

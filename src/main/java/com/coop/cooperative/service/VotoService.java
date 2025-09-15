@@ -1,10 +1,12 @@
 package com.coop.cooperative.service;
 
+import com.coop.cooperative.entity.ResultadoVotacaoAggregate;
 import com.coop.cooperative.entity.Voto;
 import com.coop.cooperative.entity.SessaoVotacao;
 import com.coop.cooperative.exception.BusinessException;
 import com.coop.cooperative.exception.ResourceNotFoundException;
 import com.coop.cooperative.repository.PautaRepository;
+import com.coop.cooperative.repository.ResultadoRepository;
 import com.coop.cooperative.repository.SessaoRepository;
 import com.coop.cooperative.repository.VotoRepository;
 import org.springframework.stereotype.Service;
@@ -16,13 +18,16 @@ public class VotoService {
     private final VotoRepository votoRepository;
     private final SessaoRepository sessaoRepository;
     private final PautaRepository pautaRepository;
+    private final ResultadoRepository resultadoRepository;
 
     public VotoService(VotoRepository votoRepository,
                        SessaoRepository sessaoRepository,
-                       PautaRepository pautaRepository) {
+                       PautaRepository pautaRepository,
+                       ResultadoRepository resultadoRepository) {
         this.votoRepository = votoRepository;
         this.sessaoRepository = sessaoRepository;
         this.pautaRepository = pautaRepository;
+        this.resultadoRepository = resultadoRepository;
     }
 
     /**
@@ -49,10 +54,7 @@ public class VotoService {
 
         String associadoIdStr = String.valueOf(associadoId);
 
-        votoRepository.findByPautaIdAndAssociadoId(pautaId, associadoIdStr).ifPresent(v -> {
-            throw new BusinessException("Associado já votou nesta pauta: " + associadoIdStr);
-        });
-
+        // converte opção de voto
         Voto.OpcaoVoto opcao;
         try {
             opcao = Voto.OpcaoVoto.valueOf(opcaoStr.trim().toUpperCase());
@@ -61,6 +63,51 @@ public class VotoService {
         }
 
         Voto voto = new Voto(pautaId, associadoIdStr, opcao);
-        return votoRepository.save(voto);
+
+        // salva voto: rely on DB unique constraint
+        try {
+            voto = votoRepository.saveAndFlush(voto); // flush para capturar constraint violations
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            // unique constraint violada => associado já votou
+            throw new BusinessException("Associado já votou nesta pauta: " + associadoIdStr);
+        } catch (Exception ex) {
+            throw new BusinessException("Erro inesperado ao registrar voto: " + ex.getMessage());
+        }
+
+        // atualiza agregado de forma resiliente
+        int updated = 0;
+        try {
+            if (opcao == Voto.OpcaoVoto.SIM) {
+                updated = resultadoRepository.incrementSim(pautaId);
+            } else {
+                updated = resultadoRepository.incrementNao(pautaId);
+            }
+        } catch (Exception ex) {
+            throw new BusinessException("Erro ao atualizar agregado de votos: " + ex.getMessage());
+        }
+
+        if (updated == 0) {
+            // agregação ainda não existe; tenta criar
+            try {
+                ResultadoVotacaoAggregate r = new ResultadoVotacaoAggregate(
+                        pautaId,
+                        opcao == Voto.OpcaoVoto.SIM ? 1L : 0L,
+                        opcao == Voto.OpcaoVoto.NAO ? 1L : 0L
+                );
+                resultadoRepository.save(r);
+            } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+                // outra thread inseriu ao mesmo tempo -> retry increment
+                try {
+                    if (opcao == Voto.OpcaoVoto.SIM) resultadoRepository.incrementSim(pautaId);
+                    else resultadoRepository.incrementNao(pautaId);
+                } catch (Exception ex2) {
+                    throw new BusinessException("Erro ao atualizar agregado após concorrência: " + ex2.getMessage());
+                }
+            } catch (Exception ex) {
+                throw new BusinessException("Erro inesperado ao criar agregado de votos: " + ex.getMessage());
+            }
+        }
+
+        return voto;
     }
 }
