@@ -1,117 +1,166 @@
-# Votação
+# 🗳️ Desafio Votação
 
-## Objetivo
+Este projeto é uma aplicação Java Spring Boot desenvolvida como parte de um desafio técnico.  
+O objetivo é implementar um sistema de votação com regras específicas, utilizando **Spring Boot**, **Maven** e **Banco de Dados**.
 
-No cooperativismo, cada associado possui um voto e as decisões são tomadas em assembleias, por votação. Imagine que você deve criar uma solução para dispositivos móveis para gerenciar e participar dessas sessões de votação.
-Essa solução deve ser executada na nuvem e promover as seguintes funcionalidades através de uma API REST:
+---
 
-- Cadastrar uma nova pauta
-- Abrir uma sessão de votação em uma pauta (a sessão de votação deve ficar aberta por
-  um tempo determinado na chamada de abertura ou 1 minuto por default)
-- Receber votos dos associados em pautas (os votos são apenas 'Sim'/'Não'. Cada associado
-  é identificado por um id único e pode votar apenas uma vez por pauta)
-- Contabilizar os votos e dar o resultado da votação na pauta
+## ⚙️ Tecnologias Utilizadas
 
-Para fins de exercício, a segurança das interfaces pode ser abstraída e qualquer chamada para as interfaces pode ser considerada como autorizada. A solução deve ser construída em java, usando Spring-boot, mas os frameworks e bibliotecas são de livre escolha (desde que não infrinja direitos de uso).
+- Java 17
+- Spring Boot
+- Maven
+- H2 Database (memória)
+- JUnit / Mockito (para testes)
+- Actuator (para métricas de performance)
 
-É importante que as pautas e os votos sejam persistidos e que não sejam perdidos com o restart da aplicação.
+---
 
-O foco dessa avaliação é a comunicação entre o backend e o aplicativo mobile. Essa comunicação é feita através de mensagens no formato JSON, onde essas mensagens serão interpretadas pelo cliente para montar as telas onde o usuário vai interagir com o sistema. A aplicação cliente não faz parte da avaliação, apenas os componentes do servidor. O formato padrão dessas mensagens será detalhado no anexo 1.
+## 📂 Estrutura do Projeto
 
-## Como proceder
+- `src/main/java` → Código da aplicação
+- `src/test/java` → Testes unitários
+- `resources/application.properties` → Configurações da aplicação
 
-Por favor, **CLONE** o repositório e implemente sua solução, ao final, notifique a conclusão e envie o link do seu repositório clonado no GitHub, para que possamos analisar o código implementado.
+Classe principal para execução:
+com.coop.cooperative.CooperativeApplication
 
-Lembre de deixar todas as orientações necessárias para executar o seu código.
+---
 
-### Tarefas bônus
+## ▶️ Como Rodar o Projeto
 
-- Tarefa Bônus 1 - Integração com sistemas externos
-  - Criar uma Facade/Client Fake que retorna aleátoriamente se um CPF recebido é válido ou não.
-  - Caso o CPF seja inválido, a API retornará o HTTP Status 404 (Not found). Você pode usar geradores de CPF para gerar CPFs válidos
-  - Caso o CPF seja válido, a API retornará se o usuário pode (ABLE_TO_VOTE) ou não pode (UNABLE_TO_VOTE) executar a operação. Essa operação retorna resultados aleatórios, portanto um mesmo CPF pode funcionar em um teste e não funcionar no outro.
-
-```
-// CPF Ok para votar
-{
-    "status": "ABLE_TO_VOTE
-}
-// CPF Nao Ok para votar - retornar 404 no client tb
-{
-    "status": "UNABLE_TO_VOTE
-}
+### 1. Clonar o repositório
+```bash
+  git clone https://github.com/MatheusSia/desafio-votacao-sia.git
+  cd desafio-votacao
 ```
 
-Exemplos de retorno do serviço
-
-### Tarefa Bônus 2 - Performance
-
-- Imagine que sua aplicação possa ser usada em cenários que existam centenas de
-  milhares de votos. Ela deve se comportar de maneira performática nesses
-  cenários
-- Testes de performance são uma boa maneira de garantir e observar como sua
-  aplicação se comporta
-
-### Tarefa Bônus 3 - Versionamento da API
-
-○ Como você versionaria a API da sua aplicação? Que estratégia usar?
-
-## O que será analisado
-
-- Simplicidade no design da solução (evitar over engineering)
-- Organização do código
-- Arquitetura do projeto
-- Boas práticas de programação (manutenibilidade, legibilidade etc)
-- Possíveis bugs
-- Tratamento de erros e exceções
-- Explicação breve do porquê das escolhas tomadas durante o desenvolvimento da solução
-- Uso de testes automatizados e ferramentas de qualidade
-- Limpeza do código
-- Documentação do código e da API
-- Logs da aplicação
-- Mensagens e organização dos commits
-
-## Dicas
-
-- Teste bem sua solução, evite bugs
-- Deixe o domínio das URLs de callback passiveis de alteração via configuração, para facilitar
-  o teste tanto no emulador, quanto em dispositivos fisicos.
-  Observações importantes
-- Não inicie o teste sem sanar todas as dúvidas
-- Iremos executar a aplicação para testá-la, cuide com qualquer dependência externa e
-  deixe claro caso haja instruções especiais para execução do mesmo
-  Classificação da informação: Uso Interno
-
-## Anexo 1
-
-### Introdução
-
-A seguir serão detalhados os tipos de tela que o cliente mobile suporta, assim como os tipos de campos disponíveis para a interação do usuário.
-
-### Tipo de tela – FORMULARIO
-
-A tela do tipo FORMULARIO exibe uma coleção de campos (itens) e possui um ou dois botões de ação na parte inferior.
-
-O aplicativo envia uma requisição POST para a url informada e com o body definido pelo objeto dentro de cada botão quando o mesmo é acionado. Nos casos onde temos campos de entrada
-de dados na tela, os valores informados pelo usuário são adicionados ao corpo da requisição. Abaixo o exemplo da requisição que o aplicativo vai fazer quando o botão “Ação 1” for acionado:
-
-```
-POST http://seudominio.com/ACAO1
-{
-    “campo1”: “valor1”,
-    “campo2”: 123,
-    “idCampoTexto”: “Texto”,
-    “idCampoNumerico: 999
-    “idCampoData”: “01/01/2000”
-}
+### 2. Build do projeto
+```bash
+  mvn clean install
 ```
 
-Obs: o formato da url acima é meramente ilustrativo e não define qualquer padrão de formato.
+### 3. Executar a aplicação
+```bash
+  mvn spring-boot:run
+```
+Ou executar diretamente a classe principal pela sua IDE (IntelliJ/Eclipse):
+```bash
+  com.coop.cooperative.CooperativeApplication
+```
 
-### Tipo de tela – SELECAO
+---
 
-A tela do tipo SELECAO exibe uma lista de opções para que o usuário.
+## 🗄️ Banco de Dados H2
 
-O aplicativo envia uma requisição POST para a url informada e com o body definido pelo objeto dentro de cada item da lista de seleção, quando o mesmo é acionado, semelhando ao funcionamento dos botões da tela FORMULARIO.
+A aplicação utiliza H2 Database em memória.
 
-# desafio-votacao
+### Acessar console H2
+
+Após iniciar a aplicação, acesse:
+http://localhost:8080/h2-console
+
+Credenciais padrão:
+- JDBC URL: jdbc:h2:mem:testdb
+- Usuário: sa
+- Senha: (em branco)
+
+---
+
+## 🌐 Endpoints Principais
+
+- POST /pautas/cadastrar → Criar nova pauta (Exemplo de entrada)
+```bash
+  {
+    "titulo": "Teste",
+    "descricao": "Teste para ver se a tarefa bonus 2 esta com tudo correto"
+  }
+```
+
+- POST /pautas/{id}/abrir-sessao → Abrir sessão de votos para pauta (Exemplo de entrada)
+```bash
+  {
+    "minutos": 3
+  }
+```
+
+- POST /votos/registrar → Registrar voto (Exemplo de entrada)
+```bash
+    {
+      "associadoId": 1,
+      "pautaId": 1,
+      "opcao": "sim"
+    }
+```
+
+- GET /pautas/{id}/resultado → Obter resultado da votação (Exemplo de saída)
+```bash
+    {
+        "tipoTela": "SELECAO",
+        "mensagem": "Resultado da votação",
+        "dados": {
+            "pautaId": 1,
+            "totalSim": 3,
+            "totalNao": 2,
+            "status": "ENCERRADA",
+            "resultado": "APROVADA"
+        }
+    }
+```
+
+- GET /cpf/{cpf} → Verifica se o CPF recebido é valido ou não para votar (Exemplo de saída)
+
+```bash
+    {
+        "status": "ABLE_TO_VOTE"
+    }
+```
+
+---
+
+## 🧪 Rodando Testes
+
+## Testes de Controller, Repository e Service
+
+### 1. Rodando testes individuais
+Você pode executar os testes diretamente na IDE (IntelliJ ou outra):
+
+- #### Controller:
+```PautaControllerTest``` → botão direito no arquivo → Run 'PautaControllerTest'
+- #### Repository:
+```PautaRepositoryTest``` → botão direito no arquivo → Run 'PautaRepositoryTest'
+- #### Service:
+```VotoServiceTest``` → botão direito no arquivo → Run 'VotoServiceTest'
+
+### 2. Rodando todos os testes de uma vez
+Se preferir executar todos os testes do projeto ou de um pacote específico:
+
+- Pelo IntelliJ: botão direito no pacote ```src/test/java/com/coop/cooperative/``` → Run 'All Tests'
+- Pelo terminal, usando Maven:
+```./mvnw test```
+
+## Teste de performance
+
+### 1. Criar uma pauta
+- Anote o id retornado (exemplo: 1).
+
+### 2. Abrir a sessão da pauta
+- Substitua {id} pelo id da pauta criada.
+
+### 3. Configurar o teste
+- Abra o arquivo: ```src/test/java/com/coop/cooperative/ConcurrentVotingTest```
+- Localize na linha 40: "pautaId", 34L,
+- Troque 33L pelo id da pauta criada (exemplo: 1L).
+
+### 4. Executar o teste
+- No IntelliJ (ou outra IDE): botão direito no arquivo → Run 'ConcurrentVotingTest'
+
+### 5. Ver métricas de performance
+- Após a execução, acesse: http://localhost:8080/actuator/metrics/http.server.requests
+- No link estão as métricas geradas pelo Spring Actuator (latência, contagem de requisições, etc.).
+
+---
+
+## ✍️ Autor
+
+### Matheus Sia

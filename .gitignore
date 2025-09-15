@@ -1,0 +1,36 @@
+# ============================
+# Maven
+# ============================
+/target/
+/pom.xml.tag
+/pom.xml.releaseBackup
+/pom.xml.versionsBackup
+/logs/
+/release.properties
+/dependency-reduced-pom.xml
+/buildNumber.properties
+/.mvn/timing.properties
+
+# ============================
+# IntelliJ IDEA
+# ============================
+/.idea/
+/*.iml
+out/
+
+# ============================
+# Arquivos de sistema
+# ============================
+.DS_Store
+Thumbs.db
+
+# ============================
+# Logs
+# ============================
+*.log
+
+# ============================
+# Arquivos de banco local (H2)
+# ============================
+/data/*.mv.db
+/data/*.trace.db
