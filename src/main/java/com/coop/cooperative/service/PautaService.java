@@ -96,9 +96,13 @@ public class PautaService {
                 .orElse("SEM_SESSAO");
 
         String resultado;
-        if (agg.getTotalSim() > agg.getTotalNao()) resultado = "APROVADA";
-        else if (agg.getTotalNao() > agg.getTotalSim()) resultado = "REJEITADA";
-        else resultado = "EMPATE";
+        if ("ABERTA".equals(status)) {
+            resultado = "VOTAÇÃO EM ANDAMENTO";
+        } else {
+            if (agg.getTotalSim() > agg.getTotalNao()) resultado = "APROVADA";
+            else if (agg.getTotalNao() > agg.getTotalSim()) resultado = "REJEITADA";
+            else resultado = "PAUTA EMPATADA (Aguardando voto do presidente da cooperativa)";
+        }
 
         return new ResultadoVotacao(pautaId, agg.getTotalSim(), agg.getTotalNao(), status, resultado);
     }
