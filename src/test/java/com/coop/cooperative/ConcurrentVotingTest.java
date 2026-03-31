@@ -38,7 +38,7 @@ public class ConcurrentVotingTest {
             ex.submit(() -> {
                 try {
                     Map<String,Object> body = Map.of("associadoId", assoc, "pautaId", 34L, "opcao", "SIM");
-                    ResponseEntity<String> r = rest.postForEntity("http://localhost:" + port + "/votos/registrar", body, String.class);
+                    ResponseEntity<String> r = rest.postForEntity("http://localhost:" + port + "/votos", body, String.class);
                     if (r.getStatusCode().is2xxSuccessful()) success.incrementAndGet();
                 } catch (HttpClientErrorException e) {
                     if (e.getStatusCode() == HttpStatus.CONFLICT || e.getStatusCode() == HttpStatus.BAD_REQUEST) conflict.incrementAndGet();

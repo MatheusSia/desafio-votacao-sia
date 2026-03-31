@@ -20,15 +20,15 @@ public class PautaController {
         this.pautaService = pautaService;
     }
 
-    @PostMapping("/cadastrar")
-    public ResponseEntity<?> cadastrar(@RequestBody CriarPautaRequest request) {
+    @PostMapping
+    public ResponseEntity<?> criar(@RequestBody CriarPautaRequest request) {
         Pauta pauta = pautaService.criarPauta(request.getTitulo(), request.getDescricao());
         return ResponseEntity.ok(
                 new ResultadoResponse("FORMULARIO", "Pauta cadastrada com sucesso", pauta.getId())
         );
     }
 
-    @PostMapping("/{id}/abrir-sessao")
+    @PostMapping("/{id}/sessoes")
     public ResponseEntity<?> abrirSessao(
             @PathVariable Long id,
             @RequestBody(required = false) AbrirSessaoRequest request) {

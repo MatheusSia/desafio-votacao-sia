@@ -18,7 +18,7 @@ class PautaControllerTest {
 
     @Test
     void deveCadastrarPautaComSucesso() throws Exception {
-        mockMvc.perform(post("/pautas/cadastrar")
+        mockMvc.perform(post("/pautas")
                         .contentType("application/json")
                         .content("{\"titulo\": \"Pauta via Teste\", \"descricao\": \"Teste API\"}"))
                 .andExpect(status().isOk());

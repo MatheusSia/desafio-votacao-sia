@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cpf")
+@RequestMapping("/cpfs")
 public class CpfController {
 
     private final CpfValidationClient cpfValidationClient;
@@ -14,7 +14,7 @@ public class CpfController {
         this.cpfValidationClient = cpfValidationClient;
     }
 
-    @GetMapping("/{cpf}")
+    @GetMapping("/{cpf}/status")
     public ResponseEntity<?> checkCpf(@PathVariable String cpf) {
         return cpfValidationClient.validateCpf(cpf);
     }

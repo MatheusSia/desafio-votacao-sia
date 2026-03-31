@@ -90,7 +90,7 @@ Credenciais padrão:
 
 ## 🌐 Endpoints Principais
 
-- POST /pautas/cadastrar → Criar nova pauta (Exemplo de entrada)
+- POST /pautas → Criar nova pauta (Exemplo de entrada)
 ```bash
   {
     "titulo": "Teste",
@@ -98,7 +98,7 @@ Credenciais padrão:
   }
 ```
 
-- POST /pautas/{id}/abrir-sessao → Abrir sessão de votos para pauta (Exemplo de entrada)
+- POST /pautas/{id}/sessoes → Abrir sessão de votos para pauta (Exemplo de entrada)
 ```bash
   {
     "minutos": 3
@@ -106,7 +106,7 @@ Credenciais padrão:
 ```
 Caso não seja colocado nenhum parametro no body, ele abre como padrão por 1 minuto.
 
-- POST /votos/registrar → Registrar voto (Exemplo de entrada)
+- POST /votos → Registrar voto (Exemplo de entrada)
 ```bash
     {
       "associadoId": 1,
@@ -130,7 +130,7 @@ Caso não seja colocado nenhum parametro no body, ele abre como padrão por 1 mi
     }
 ```
 
-- GET /cpf/{cpf} → Verifica se o CPF recebido é valido ou não para votar (Exemplo de saída)
+- GET /cpfs/{cpf}/status → Verifica se o CPF recebido é válido para votar (Exemplo de saída)
 
 ```bash
     {

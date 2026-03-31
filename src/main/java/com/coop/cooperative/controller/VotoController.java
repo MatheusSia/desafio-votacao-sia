@@ -17,7 +17,7 @@ public class VotoController {
         this.votoService = votoService;
     }
 
-    @PostMapping("/registrar")
+    @PostMapping
     public ResponseEntity<?> registrar(@RequestBody VotoRequest request) {
         Voto voto = votoService.registrarVoto(request.getAssociadoId(), request.getPautaId(), request.getOpcao());
 
