@@ -1,6 +1,7 @@
 package com.coop.cooperative.service;
 
 import com.coop.cooperative.dto.ResultadoVotacao;
+import com.coop.cooperative.dto.SessaoAberturaResponse;
 import com.coop.cooperative.entity.Pauta;
 import com.coop.cooperative.entity.ResultadoVotacaoAggregate;
 import com.coop.cooperative.entity.SessaoVotacao;
@@ -57,6 +58,12 @@ public class PautaService {
 
         SessaoVotacao sessao = new SessaoVotacao(pautaId, inicio, fim);
         return sessaoRepository.save(sessao);
+    }
+
+    public SessaoAberturaResponse abrirSessaoComResumo(Long pautaId, Integer minutos) {
+        SessaoVotacao sessao = abrirSessao(pautaId, minutos);
+        long duracaoMinutos = ChronoUnit.MINUTES.between(sessao.getInicio(), sessao.getFim());
+        return new SessaoAberturaResponse(sessao.getId(), duracaoMinutos);
     }
 
     public ResultadoVotacao obterResultado(Long pautaId) {

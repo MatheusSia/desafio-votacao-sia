@@ -4,8 +4,8 @@ import com.coop.cooperative.dto.AbrirSessaoRequest;
 import com.coop.cooperative.dto.CriarPautaRequest;
 import com.coop.cooperative.dto.ResultadoResponse;
 import com.coop.cooperative.dto.ResultadoVotacao;
+import com.coop.cooperative.dto.SessaoAberturaResponse;
 import com.coop.cooperative.entity.Pauta;
-import com.coop.cooperative.entity.SessaoVotacao;
 import com.coop.cooperative.service.PautaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +34,12 @@ public class PautaController {
             @RequestBody(required = false) AbrirSessaoRequest request) {
 
         Integer minutos = request == null ? null : request.getMinutos();
-        SessaoVotacao sessao = pautaService.abrirSessao(id, minutos);
+        SessaoAberturaResponse sessao = pautaService.abrirSessaoComResumo(id, minutos);
 
         return ResponseEntity.ok(
                 new ResultadoResponse("FORMULARIO",
-                        "Sessão aberta por " + (minutos == null ? 1 : minutos) + " minuto(s)",
-                        sessao.getId())
+                        "Sessão aberta por " + sessao.getDuracaoMinutos() + " minuto(s)",
+                        sessao.getSessaoId())
         );
     }
 
