@@ -17,7 +17,6 @@ public class CpfValidationClient {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CPF inválido");
         }
 
-        // Se válido, decide aleatoriamente se pode votar
         boolean ableToVote = random.nextBoolean();
         if (ableToVote) {
             return ResponseEntity.ok(new StatusResponse("ABLE_TO_VOTE"));
@@ -26,7 +25,6 @@ public class CpfValidationClient {
         }
     }
 
-    // Validação real de CPF
     private boolean isValidCpf(String cpf) {
         if (cpf == null || cpf.length() != 11 || cpf.matches("(\\d)\\1{10}")) {
             return false;

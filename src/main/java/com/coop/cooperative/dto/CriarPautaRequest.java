@@ -2,7 +2,7 @@ package com.coop.cooperative.dto;
 
 public class CriarPautaRequest {
     private String titulo;
-    private String descricao; // opcional
+    private String descricao;
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }

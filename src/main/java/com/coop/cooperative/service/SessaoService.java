@@ -17,7 +17,6 @@ public class SessaoService {
     }
 
     public SessaoVotacao abrirSessao(Long pautaId, Long duracaoSegundos) {
-        // se já existir sessão para a pauta e ainda estiver aberta, lançar erro
         sessaoRepository.findByPautaId(pautaId).ifPresent(existing -> {
             if (existing.getFim().isAfter(LocalDateTime.now())) {
                 throw new BusinessException("Sessão já aberta para a pauta: " + pautaId);

@@ -1,7 +1,7 @@
 package com.coop.cooperative.dto;
 
 public class ResultadoResponse {
-    private String tipoTela; // FORMULARIO ou SELECAO
+    private String tipoTela;
     private String mensagem;
     private Object dados;
 

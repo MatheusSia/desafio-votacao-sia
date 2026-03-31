@@ -42,14 +42,10 @@ public class PautaService {
         return pautaRepository.save(p);
     }
 
-    /**
-     * Abre uma sessão para a pauta. minutos = null -> default 1 minuto.
-     */
     public SessaoVotacao abrirSessao(Long pautaId, Integer minutos) {
         Pauta pauta = pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada: " + pautaId));
 
-        // se já existir sessão para a pauta (aberta ou encerrada), lança erro
         Optional<SessaoVotacao> existing = sessaoRepository.findByPautaId(pautaId);
         if (existing.isPresent()) {
             throw new BusinessException("Já existe uma sessão cadastrada para a pauta: " + pautaId);
@@ -63,29 +59,23 @@ public class PautaService {
         return sessaoRepository.save(sessao);
     }
 
-    /**
-     * Retorna contagem de votos e status da sessão (ABERTA / ENCERRADA / SEM_SESSAO)
-     */
     public ResultadoVotacao obterResultado(Long pautaId) {
         pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada: " + pautaId));
 
         ResultadoVotacaoAggregate agg = resultadoRepository.findById(pautaId).orElse(null);
         if (agg == null) {
-            // primeira leitura: inicializa agregação a partir da tabela VOTO (fallback)
             long sim = votoRepository.countByPautaIdAndOpcao(pautaId, Voto.OpcaoVoto.SIM);
             long nao = votoRepository.countByPautaIdAndOpcao(pautaId, Voto.OpcaoVoto.NAO);
             agg = new ResultadoVotacaoAggregate(pautaId, sim, nao);
             try {
                 resultadoRepository.save(agg);
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                // Concorrência: outra thread salvou primeiro
                 agg = resultadoRepository.findById(pautaId)
                         .orElseThrow(() ->
                                 new BusinessException("Erro ao salvar resultado de votação: " + e.getMessage())
                         );
             } catch (Exception e) {
-                // Qualquer outro erro inesperado
                 throw new BusinessException("Erro inesperado ao salvar resultado de votação: " + e.getMessage());
             }
 

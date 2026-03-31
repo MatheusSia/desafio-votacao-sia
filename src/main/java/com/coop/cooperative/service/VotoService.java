@@ -30,21 +30,11 @@ public class VotoService {
         this.resultadoRepository = resultadoRepository;
     }
 
-    /**
-     * Registrar voto.
-     * Note que no banco a coluna associadoId é string (flexível) — convertemos aqui.
-     *
-     * @param associadoId identificador do associado (Long no contract)
-     * @param pautaId id da pauta
-     * @param opcaoStr "SIM" / "NAO" (case-insensitive)
-     */
     @Transactional
     public Voto registrarVoto(Long associadoId, Long pautaId, String opcaoStr) {
-        // valida pauta
         pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada: " + pautaId));
 
-        // valida sessão
         SessaoVotacao sessao = sessaoRepository.findByPautaId(pautaId)
                 .orElseThrow(() -> new BusinessException("Sessão de votação inexistente para pauta: " + pautaId));
 
@@ -54,7 +44,6 @@ public class VotoService {
 
         String associadoIdStr = String.valueOf(associadoId);
 
-        // converte opção de voto
         Voto.OpcaoVoto opcao;
         try {
             opcao = Voto.OpcaoVoto.valueOf(opcaoStr.trim().toUpperCase());
@@ -64,17 +53,14 @@ public class VotoService {
 
         Voto voto = new Voto(pautaId, associadoIdStr, opcao);
 
-        // salva voto: rely on DB unique constraint
         try {
-            voto = votoRepository.saveAndFlush(voto); // flush para capturar constraint violations
+            voto = votoRepository.saveAndFlush(voto);
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-            // unique constraint violada => associado já votou
             throw new BusinessException("Associado já votou nesta pauta: " + associadoIdStr);
         } catch (Exception ex) {
             throw new BusinessException("Erro inesperado ao registrar voto: " + ex.getMessage());
         }
 
-        // atualiza agregado de forma resiliente
         int updated = 0;
         try {
             if (opcao == Voto.OpcaoVoto.SIM) {
@@ -87,7 +73,6 @@ public class VotoService {
         }
 
         if (updated == 0) {
-            // agregação ainda não existe; tenta criar
             try {
                 ResultadoVotacaoAggregate r = new ResultadoVotacaoAggregate(
                         pautaId,
@@ -96,7 +81,6 @@ public class VotoService {
                 );
                 resultadoRepository.save(r);
             } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-                // outra thread inseriu ao mesmo tempo -> retry increment
                 try {
                     if (opcao == Voto.OpcaoVoto.SIM) resultadoRepository.incrementSim(pautaId);
                     else resultadoRepository.incrementNao(pautaId);

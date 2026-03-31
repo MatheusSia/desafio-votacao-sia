@@ -12,7 +12,7 @@ public class Voto {
     private Long id;
 
     private Long pautaId;
-    private String associadoId; // id único do associado (string para flexibilidade)
+    private String associadoId;
     @Enumerated(EnumType.STRING)
     private OpcaoVoto opcao;
     private LocalDateTime criadoEm = LocalDateTime.now();
@@ -25,7 +25,6 @@ public class Voto {
         this.opcao = opcao;
     }
 
-    // getters/setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getPautaId() { return pautaId; }

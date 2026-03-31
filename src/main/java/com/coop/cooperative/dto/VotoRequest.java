@@ -3,7 +3,7 @@ package com.coop.cooperative.dto;
 public class VotoRequest {
     private Long associadoId;
     private Long pautaId;
-    private String opcao; // "SIM" ou "NAO"
+    private String opcao;
 
     public Long getAssociadoId() { return associadoId; }
     public void setAssociadoId(Long associadoId) { this.associadoId = associadoId; }

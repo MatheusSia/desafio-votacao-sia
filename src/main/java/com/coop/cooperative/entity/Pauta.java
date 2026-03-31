@@ -16,8 +16,6 @@ public class Pauta {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // constructors, getters, setters
-
     public Pauta() {}
 
     public Pauta(String titulo, String descricao) {
@@ -25,7 +23,6 @@ public class Pauta {
         this.descricao = descricao;
     }
 
-    // getters/setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitulo() { return titulo; }

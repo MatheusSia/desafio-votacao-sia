@@ -19,7 +19,6 @@ public class VotoController {
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registrar(@RequestBody VotoRequest request) {
-        // o service lança BusinessException / ResourceNotFoundException quando necessário
         Voto voto = votoService.registrarVoto(request.getAssociadoId(), request.getPautaId(), request.getOpcao());
 
         return ResponseEntity.ok(

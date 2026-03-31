@@ -4,8 +4,8 @@ public class ResultadoVotacao {
     private Long pautaId;
     private long totalSim;
     private long totalNao;
-    private String status;   // ABERTA / ENCERRADA / SEM_SESSAO
-    private String resultado; // APROVADA / REJEITADA / EMPATE
+    private String status;
+    private String resultado;
 
     public ResultadoVotacao(Long pautaId, long totalSim, long totalNao, String status, String resultado) {
         this.pautaId = pautaId;
