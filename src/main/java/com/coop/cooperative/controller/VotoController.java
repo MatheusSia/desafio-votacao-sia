@@ -1,7 +1,6 @@
 package com.coop.cooperative.controller;
 
 import com.coop.cooperative.dto.VotoRequest;
-import com.coop.cooperative.entity.Voto;
 import com.coop.cooperative.service.ApiResponseFactory;
 import com.coop.cooperative.service.VotoService;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +20,10 @@ public class VotoController {
 
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody VotoRequest request) {
-        Voto voto = votoService.registrarVoto(request.getAssociadoId(), request.getPautaId(), request.getOpcao());
+        Long votoId = votoService.registrarVoto(request.getAssociadoId(), request.getPautaId(), request.getOpcao());
 
         return ResponseEntity.ok(
-                apiResponseFactory.formulario("Voto registrado com sucesso", voto.getId())
+                apiResponseFactory.formulario("Voto registrado com sucesso", votoId)
         );
     }
 }

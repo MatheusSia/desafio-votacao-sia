@@ -31,7 +31,7 @@ public class VotoService {
     }
 
     @Transactional
-    public Voto registrarVoto(Long associadoId, Long pautaId, String opcaoStr) {
+    public Long registrarVoto(Long associadoId, Long pautaId, String opcaoStr) {
         pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada: " + pautaId));
 
@@ -92,6 +92,6 @@ public class VotoService {
             }
         }
 
-        return voto;
+        return voto.getId();
     }
 }

@@ -1,15 +1,17 @@
 package com.coop.cooperative.client;
 
 import com.coop.cooperative.dto.StatusResponse;
+import com.coop.cooperative.service.CpfValidationGateway;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
 @Component
-public class CpfValidationClient {
+public class CpfValidationClient implements CpfValidationGateway {
 
     private final Random random = new Random();
 
+    @Override
     public StatusResponse validateCpfStatus(String cpf) {
         if (!isValidCpf(cpf)) {
             throw new IllegalArgumentException("CPF inválido");

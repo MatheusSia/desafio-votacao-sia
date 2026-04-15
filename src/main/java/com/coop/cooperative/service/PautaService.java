@@ -36,15 +36,15 @@ public class PautaService {
         this.resultadoRepository = resultadoRepository;
     }
 
-    public Pauta criarPauta(String titulo, String descricao) {
+    public Long criarPauta(String titulo, String descricao) {
         Pauta p = new Pauta();
         p.setTitulo(titulo);
         p.setDescricao(descricao);
-        return pautaRepository.save(p);
+        return pautaRepository.save(p).getId();
     }
 
-    public SessaoVotacao abrirSessao(Long pautaId, Integer minutos) {
-        Pauta pauta = pautaRepository.findById(pautaId)
+    private SessaoVotacao abrirSessao(Long pautaId, Integer minutos) {
+        pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pauta não encontrada: " + pautaId));
 
         Optional<SessaoVotacao> existing = sessaoRepository.findByPautaId(pautaId);

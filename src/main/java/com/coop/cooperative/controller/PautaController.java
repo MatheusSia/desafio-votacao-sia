@@ -4,7 +4,6 @@ import com.coop.cooperative.dto.AbrirSessaoRequest;
 import com.coop.cooperative.dto.CriarPautaRequest;
 import com.coop.cooperative.dto.ResultadoVotacao;
 import com.coop.cooperative.dto.SessaoAberturaResponse;
-import com.coop.cooperative.entity.Pauta;
 import com.coop.cooperative.service.ApiResponseFactory;
 import com.coop.cooperative.service.PautaService;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +23,9 @@ public class PautaController {
 
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody CriarPautaRequest request) {
-        Pauta pauta = pautaService.criarPauta(request.getTitulo(), request.getDescricao());
+        Long pautaId = pautaService.criarPauta(request.getTitulo(), request.getDescricao());
         return ResponseEntity.ok(
-                apiResponseFactory.formulario("Pauta cadastrada com sucesso", pauta.getId())
+                apiResponseFactory.formulario("Pauta cadastrada com sucesso", pautaId)
         );
     }
 
