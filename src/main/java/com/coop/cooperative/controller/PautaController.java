@@ -2,10 +2,10 @@ package com.coop.cooperative.controller;
 
 import com.coop.cooperative.dto.AbrirSessaoRequest;
 import com.coop.cooperative.dto.CriarPautaRequest;
-import com.coop.cooperative.dto.ResultadoResponse;
 import com.coop.cooperative.dto.ResultadoVotacao;
 import com.coop.cooperative.dto.SessaoAberturaResponse;
 import com.coop.cooperative.entity.Pauta;
+import com.coop.cooperative.service.ApiResponseFactory;
 import com.coop.cooperative.service.PautaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +15,18 @@ import org.springframework.web.bind.annotation.*;
 public class PautaController {
 
     private final PautaService pautaService;
+    private final ApiResponseFactory apiResponseFactory;
 
-    public PautaController(PautaService pautaService) {
+    public PautaController(PautaService pautaService, ApiResponseFactory apiResponseFactory) {
         this.pautaService = pautaService;
+        this.apiResponseFactory = apiResponseFactory;
     }
 
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody CriarPautaRequest request) {
         Pauta pauta = pautaService.criarPauta(request.getTitulo(), request.getDescricao());
         return ResponseEntity.ok(
-                new ResultadoResponse("FORMULARIO", "Pauta cadastrada com sucesso", pauta.getId())
+                apiResponseFactory.formulario("Pauta cadastrada com sucesso", pauta.getId())
         );
     }
 
@@ -37,8 +39,7 @@ public class PautaController {
         SessaoAberturaResponse sessao = pautaService.abrirSessaoComResumo(id, minutos);
 
         return ResponseEntity.ok(
-                new ResultadoResponse("FORMULARIO",
-                        "Sessão aberta por " + sessao.getDuracaoMinutos() + " minuto(s)",
+                apiResponseFactory.formulario("Sessão aberta por " + sessao.getDuracaoMinutos() + " minuto(s)",
                         sessao.getSessaoId())
         );
     }
@@ -48,7 +49,7 @@ public class PautaController {
         ResultadoVotacao resultado = pautaService.obterResultado(id);
 
         return ResponseEntity.ok(
-                new ResultadoResponse("SELECAO", "Resultado da votação", resultado)
+                apiResponseFactory.selecao("Resultado da votação", resultado)
         );
     }
 }

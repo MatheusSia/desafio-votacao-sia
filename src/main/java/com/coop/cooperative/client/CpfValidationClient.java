@@ -1,8 +1,6 @@
 package com.coop.cooperative.client;
 
 import com.coop.cooperative.dto.StatusResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -12,16 +10,16 @@ public class CpfValidationClient {
 
     private final Random random = new Random();
 
-    public ResponseEntity<?> validateCpf(String cpf) {
+    public StatusResponse validateCpfStatus(String cpf) {
         if (!isValidCpf(cpf)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CPF inválido");
+            throw new IllegalArgumentException("CPF inválido");
         }
 
         boolean ableToVote = random.nextBoolean();
         if (ableToVote) {
-            return ResponseEntity.ok(new StatusResponse("ABLE_TO_VOTE"));
+            return new StatusResponse("ABLE_TO_VOTE");
         } else {
-            return ResponseEntity.ok(new StatusResponse("UNABLE_TO_VOTE"));
+            return new StatusResponse("UNABLE_TO_VOTE");
         }
     }
 

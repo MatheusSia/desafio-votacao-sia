@@ -1,6 +1,7 @@
 package com.coop.cooperative.controller;
 
-import com.coop.cooperative.client.CpfValidationClient;
+import com.coop.cooperative.dto.StatusResponse;
+import com.coop.cooperative.service.CpfService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,14 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cpfs")
 public class CpfController {
 
-    private final CpfValidationClient cpfValidationClient;
+    private final CpfService cpfService;
 
-    public CpfController(CpfValidationClient cpfValidationClient) {
-        this.cpfValidationClient = cpfValidationClient;
+    public CpfController(CpfService cpfService) {
+        this.cpfService = cpfService;
     }
 
     @GetMapping("/{cpf}/status")
     public ResponseEntity<?> checkCpf(@PathVariable String cpf) {
-        return cpfValidationClient.validateCpf(cpf);
+        StatusResponse status = cpfService.validarCpf(cpf);
+        return ResponseEntity.ok(status);
     }
 }
