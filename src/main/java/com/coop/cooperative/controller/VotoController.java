@@ -3,6 +3,7 @@ package com.coop.cooperative.controller;
 import com.coop.cooperative.dto.VotoRequest;
 import com.coop.cooperative.service.ApiResponseFactory;
 import com.coop.cooperative.service.VotoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class VotoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> registrar(@RequestBody VotoRequest request) {
+    public ResponseEntity<?> registrar(@Valid @RequestBody VotoRequest request) {
         Long votoId = votoService.registrarVoto(request.getAssociadoId(), request.getPautaId(), request.getOpcao());
 
         return ResponseEntity.ok(
