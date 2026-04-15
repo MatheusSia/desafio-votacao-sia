@@ -16,6 +16,10 @@ public class ResultadoVotacaoAggregate {
     @Column(name = "total_nao", nullable = false)
     private long totalNao;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pauta_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private Pauta pauta;
+
     public ResultadoVotacaoAggregate() {}
 
     public ResultadoVotacaoAggregate(Long pautaId, long totalSim, long totalNao) {
@@ -32,4 +36,7 @@ public class ResultadoVotacaoAggregate {
 
     public long getTotalNao() { return totalNao; }
     public void setTotalNao(long totalNao) { this.totalNao = totalNao; }
+
+    public Pauta getPauta() { return pauta; }
+    public void setPauta(Pauta pauta) { this.pauta = pauta; }
 }

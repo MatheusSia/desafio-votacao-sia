@@ -5,13 +5,18 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "voto",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"pautaId", "associadoId"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"pauta_id", "associado_id"}))
 public class Voto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "pauta_id")
     private Long pautaId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pauta_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private Pauta pauta;
+    @Column(name = "associado_id")
     private String associadoId;
     @Enumerated(EnumType.STRING)
     private OpcaoVoto opcao;
@@ -29,6 +34,8 @@ public class Voto {
     public void setId(Long id) { this.id = id; }
     public Long getPautaId() { return pautaId; }
     public void setPautaId(Long pautaId) { this.pautaId = pautaId; }
+    public Pauta getPauta() { return pauta; }
+    public void setPauta(Pauta pauta) { this.pauta = pauta; }
     public String getAssociadoId() { return associadoId; }
     public void setAssociadoId(String associadoId) { this.associadoId = associadoId; }
     public OpcaoVoto getOpcao() { return opcao; }
