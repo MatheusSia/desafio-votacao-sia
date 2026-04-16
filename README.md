@@ -11,6 +11,7 @@ O objetivo é implementar um sistema de votação com regras específicas, utili
 - Spring Boot
 - Maven
 - H2 Database (modo file, persistente)
+- Bean Validation (Jakarta Validation)
 - JUnit / Mockito (para testes)
 - Actuator (para métricas de performance)
 
@@ -105,6 +106,9 @@ Credenciais padrão:
   }
 ```
 Caso não seja colocado nenhum parametro no body, ele abre como padrão por 1 minuto.
+Regras de validação:
+- `id` deve ser maior que zero.
+- `minutos` (quando informado) deve estar entre `1` e `10080`.
 
 - POST /votos → Registrar voto (Exemplo de entrada)
 ```bash
@@ -114,6 +118,10 @@ Caso não seja colocado nenhum parametro no body, ele abre como padrão por 1 mi
       "opcao": "sim"
     }
 ```
+Regras de validação:
+- `associadoId` obrigatório e maior que zero.
+- `pautaId` obrigatório e maior que zero.
+- `opcao` obrigatória e deve ser `SIM` ou `NAO` (case-insensitive).
 
 - GET /pautas/{id}/resultado → Obter resultado da votação (Exemplo de saída)
 ```bash
@@ -137,12 +145,14 @@ Caso não seja colocado nenhum parametro no body, ele abre como padrão por 1 mi
         "status": "ABLE_TO_VOTE"
     }
 ```
+Regra de validação:
+- `cpf` deve conter exatamente 11 dígitos numéricos.
 
 ---
 
 ## 🧪 Rodando Testes
 
-## Testes de Controller, Repository e Service
+## Testes de Controller, Repository, Service e Integração
 
 ### 1. Rodando testes individuais
 Você pode executar os testes diretamente na IDE (IntelliJ ou outra):
@@ -152,7 +162,9 @@ Você pode executar os testes diretamente na IDE (IntelliJ ou outra):
 - #### Repository:
 ```PautaRepositoryTest``` → botão direito no arquivo → Run 'PautaRepositoryTest'
 - #### Service:
-```VotoServiceTest``` → botão direito no arquivo → Run 'VotoServiceTest'
+```VotoServiceTest``` e ```PautaServiceUnitTest``` → botão direito no arquivo → Run
+- #### Integração:
+```ApiIntegrationTest``` e ```ConcurrentVotingTest``` → botão direito no arquivo → Run
 
 ### 2. Rodando todos os testes de uma vez
 Se preferir executar todos os testes do projeto ou de um pacote específico:
@@ -163,21 +175,13 @@ Se preferir executar todos os testes do projeto ou de um pacote específico:
 
 ## Teste de performance
 
-### 1. Criar uma pauta
-- Anote o id retornado (exemplo: 1).
-
-### 2. Abrir a sessão da pauta
-- Substitua {id} pelo id da pauta criada.
-
-### 3. Configurar o teste
-- Abra o arquivo: ```src/test/java/com/coop/cooperative/ConcurrentVotingTest```
-- Localize na linha 40: "pautaId", 34L,
-- Troque 33L pelo id da pauta criada (exemplo: 1L).
-
-### 4. Executar o teste
+### 1. Executar o teste
 - No IntelliJ (ou outra IDE): botão direito no arquivo → Run 'ConcurrentVotingTest'
 
-### 5. Ver métricas de performance
+Observação:
+- O teste concorrente já cria automaticamente uma pauta e abre a sessão antes de iniciar as requisições concorrentes. Não é necessário editar o arquivo manualmente.
+
+### 2. Ver métricas de performance
 - Após a execução, acesse: http://localhost:8080/actuator/metrics/http.server.requests
 - No link estão as métricas geradas pelo Spring Actuator (latência, contagem de requisições, etc.).
 
@@ -185,63 +189,8 @@ Se preferir executar todos os testes do projeto ou de um pacote específico:
 
 ## 🔄 Versionamento da API
 
-Para permitir evolução da aplicação sem quebrar integrações existentes, a API adota a estratégia de **versionamento por URL**.  
-A versão atual é a `v1`, mas novas versões podem ser criadas no futuro, como `v2`, `v3`, etc.
-
-### 📌 Exemplo na versão 1 (v1)
-
-**Endpoint (resultado da votação):**
-GET ```http://localhost:8080/api/v1/pautas/6/resultado```
-
-**Resposta (JSON):**
-```json
-{
-  "tipoTela": "SELECAO",
-  "mensagem": "Resultado da votação",
-  "dados": {
-    "pautaId": 1,
-    "totalSim": 3,
-    "totalNao": 2,
-    "status": "ENCERRADA",
-    "resultado": "APROVADA"
-  }
-}
-```
-
-### 📌 Exemplo de possível versão futura (v2)
-
-Na versão v2, poderíamos alterar o formato da resposta, incluir novos campos ou mudar a estrutura de alguns dados sem afetar quem já utiliza a v1.
-
-**Endpoint:**
-GET ```http://localhost:8080/api/v2/pautas/6/resultado```
-
-**Resposta (JSON):**
-```json
-{
-  "pauta": {
-    "id": 1,
-    "titulo": "Teste",
-    "descricao": "Teste para ver se a tarefa bonus 2 está com tudo correto"
-  },
-  "resultado": {
-    "totalSim": 3,
-    "totalNao": 2,
-    "status": "ENCERRADA",
-    "decisao": "APROVADA"
-  },
-  "dataEncerramento": "2025-09-16T15:30:00",
-  "criador": {
-    "id": 5,
-    "nome": "Maria Silva"
-  }
-}
-```
-
-### ✅ Benefícios dessa estratégia
-
-- Mantém compatibilidade com integrações existentes.
-- Permite evoluir a API sem causar impacto em clientes antigos.
-- Facilita a organização do código, com controladores separados por versão (```PautaControllerV1```, ```PautaControllerV2```, etc.).
+Atualmente, os endpoints não estão versionados por URL (`/api/v1`).  
+Se houver evolução que quebre contrato, recomenda-se adotar versionamento explícito em versões futuras.
 
 ---
 
